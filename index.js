@@ -691,13 +691,11 @@ app.get('/dashboard', async (req, res) => {
     }
 });
 
-app.get("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Failed to destroy session:", err);
-      return res.redirect("/home"); 
-    }
-    res.redirect("/");
+// A more standard way to handle logout
+app.get("/logout", (req, res, next) => {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/');
   });
 });
 
@@ -1259,18 +1257,6 @@ app.post("/society/send-notice", isSocietyAuthenticated, (req, res) => {
     res.redirect("/society/dashboard");
 });
 
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        maxAge: 1000 * 60 * 60 * 24
-    }
-}));
-
-// ⭐ NEW: Initialize Passport and session management
-app.use(passport.initialize());
-app.use(passport.session());
 
 
 // ... (db.connect() is not needed with pg.Pool)
@@ -1281,7 +1267,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/callback",
+    callbackURL: process.env.GOOGLE_CALLBACK_URL,
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
 }, async (accessToken, refreshToken, profile, done) => {
     try {
