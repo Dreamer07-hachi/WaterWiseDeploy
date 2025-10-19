@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society Dashboard - SmartWater</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary-color: #007bff; --light-bg: #f8f9fa; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--light-bg); padding-top: 70px; }
+        .stat-card { background-color: white; border-radius: 12px; padding: 1.5rem; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.07); }
+        .stat-card .icon { font-size: 2rem; color: var(--primary-color); margin-bottom: 0.5rem; }
+        .stat-card h3 { font-weight: 700; font-size: 2.2rem; }
+        .stat-card p { color: #6c757d; margin-bottom: 0; }
+        .chart-container { background-color: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.07); }
+
+        /* Responsive styles */
+body {
+    padding-top: clamp(60px, 10vw, 70px);
+    padding-left: clamp(0.5rem, 2vw, 1rem);
+    padding-right: clamp(0.5rem, 2vw, 1rem);
+}
+
+.stat-card {
+    padding: clamp(1rem, 3vw, 1.5rem);
+    border-radius: clamp(10px, 2vw, 12px);
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+}
+
+.stat-card .icon {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin-bottom: clamp(0.35rem, 1vw, 0.5rem);
+}
+
+.stat-card h3 {
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+}
+
+.stat-card p {
+    font-size: clamp(0.85rem, 2vw, 1rem);
+}
+
+.chart-container {
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border-radius: clamp(10px, 2vw, 12px);
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+}
+
+.chart-container h5,
+.chart-container h4 {
+    font-size: clamp(1.1rem, 3vw, 1.25rem);
+}
+
+/* Tablet breakpoint */
+@media (max-width: 768px) {
+    body {
+        padding-top: 65px;
+    }
+    
+    .stat-card {
+        padding: 1.25rem;
+    }
+    
+    .stat-card h3 {
+        font-size: 1.75rem;
+    }
+    
+    .chart-container {
+        padding: 1.5rem;
+    }
+}
+
+/* Mobile breakpoint */
+@media (max-width: 480px) {
+    body {
+        padding-top: 60px;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .stat-card {
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
+    }
+    
+    .stat-card .icon {
+        font-size: 1.5rem;
+        margin-bottom: 0.35rem;
+    }
+    
+    .stat-card h3 {
+        font-size: 1.5rem;
+    }
+    
+    .stat-card p {
+        font-size: 0.85rem;
+    }
+    
+    .chart-container {
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Make charts scrollable horizontally on mobile if needed */
+    .chart-container canvas {
+        max-width: 100%;
+        height: auto !important;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+    .stat-card {
+        padding: 0.875rem;
+    }
+    
+    .stat-card h3 {
+        font-size: 1.35rem;
+    }
+    
+    .chart-container {
+        padding: 0.875rem;
+    }
+}
+
+/* Grid layout adjustments */
+@media (max-width: 768px) {
+    .row > [class*='col-'] {
+        margin-bottom: 1rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <header class="bg-white shadow-sm fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid mx-4">
+                <a class="navbar-brand fw-bold fs-4 text-primary" href="/society/dashboard">Society Dashboard</a>
+                <div class="d-flex align-items-center">
+                    <% if (society) { %>
+                        <span class="navbar-text me-3">Welcome, <%= society.chairman_name %> (<%= society.society_name %>)</span>
+                        <a href="/society/logout" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-5">
+        <!-- Key Statistics -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-users"></i></div>
+                    <h3><%= stats.resident_count %></h3>
+                    <p>Total Residents</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-tint"></i></div>
+                    <h3><%= (stats.total_consumption_litres / 1000).toFixed(2) %> <small class="fs-5 text-muted">m³</small></h3>
+                    <p>Total Consumption (This Month)</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-truck"></i></div>
+                    <h3><%= stats.bulk_orders_count %></h3>
+                    <p>Bulk Orders (This Month)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Content -->
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="chart-container">
+                    <h4 class="fw-bold mb-3">Society's Daily Water Consumption</h4>
+                    <!-- We will add the chart here in a future step -->
+                    <p class="text-center text-muted">Chart functionality coming soon.</p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="chart-container">
+                    <h4 class="fw-bold mb-3">Send Notice</h4>
+                    <p class="text-muted small">Communicate with all registered residents in your society.</p>
+                    <form action="/society/send-notice" method="POST">
+                        <div class="mb-3">
+                            <textarea name="noticeMessage" class="form-control" rows="4" placeholder="e.g., Water supply will be unavailable tomorrow from 10 AM to 1 PM for maintenance." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Send to All Residents</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

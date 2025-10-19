@@ -1,0 +1,197 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F8F9FA;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+header {
+    background-color: #1976D2;
+    color: white;
+    padding: 2rem 1rem;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Add a style for the main heading for better control */
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+main {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box; /* Ensures padding is included in the width */
+}
+
+h2 {
+    color: #1976D2;
+    margin-top: 0;
+    border-bottom: 2px solid #E0E0E0;
+    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 1.8rem;
+}
+
+.alert-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.alert-item {
+    padding: 1rem;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid transparent;
+}
+
+.alert-item h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #D32F2F;
+}
+
+.alert-item p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.alert-item strong {
+    color: #D32F2F;
+}
+
+.alert-item small {
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 0.5rem;
+}
+
+.alert-item:not(.no-alerts) {
+    background-color: #FFEBEE;
+    border-color: #EF9A9A;
+}
+
+.no-alerts {
+    background-color: #E3F2FD;
+    border-color: #90CAF9;
+    color: #0D47A1;
+    text-align: center;
+}
+
+.no-alerts i {
+    color: #1976D2;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+input[type="number"] {
+    padding: 0.75rem;
+    border: 1px solid #BDBDBD;
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #444;
+    -webkit-appearance: none; /* Removes spinner arrows on some browsers */
+    margin: 0;
+}
+
+button {
+    background-color: #1976D2;
+    color: white;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #1565C0;
+}
+
+#form-message {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #D32F2F;
+}
+
+/* --- Responsive Styles --- */
+/* Applies to screens 768px wide or smaller (tablets and phones) */
+@media (max-width: 768px) {
+    header {
+        padding: 1.5rem 1rem;
+    }
+
+    header h1 {
+        font-size: 2rem; /* Slightly smaller heading on mobile */
+    }
+
+    main {
+        padding: 1rem; /* Reduced padding for the main content area */
+        gap: 1.5rem;
+    }
+
+    .card {
+        padding: 1.5rem; /* Reduced padding inside cards */
+    }
+
+    h2 {
+        font-size: 1.5rem; /* Smaller section titles */
+    }
+
+    .alert-item h4 {
+        font-size: 1.1rem; /* Slightly smaller alert titles */
+    }
+}
+
+/* Optional: For very small screens */
+@media (max-width: 480px) {
+    main {
+        padding: 0.5rem;
+    }
+   
+    .card {
+        padding: 1rem;
+        border-radius: 0; /* Full-width cards on very small screens */
+    }
+
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+    }
+}

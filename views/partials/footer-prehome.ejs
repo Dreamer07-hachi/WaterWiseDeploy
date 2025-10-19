@@ -1,0 +1,81 @@
+<style>
+    :root {
+        --primary-blue: #2563eb;
+        --blue-light: #3b82f6;
+        --blue-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+        --white: #ffffff;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    }
+
+    /* Footer */
+    footer {
+        background: var(--gray-900);
+        color: var(--gray-400);
+        padding: 3rem 2rem 2rem;
+        margin: 0;
+        box-sizing: border-box;
+        width: 100%;
+        overflow-x: hidden;
+        text-align: center;
+    }
+    
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .footer-links a {
+        color: var(--gray-400);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+        color: var(--white);
+    }
+    
+    @media (max-width: 768px) {
+        footer {
+            padding: 1.25rem 1rem;
+        }
+        .footer-content {
+            padding: 0 0.5rem;
+            max-width: 100%;
+        }
+    }
+</style>
+<footer>
+    <div class="footer-content">
+        <div class="footer-links">
+            <a href='/login'>User Login</a>
+            <a href="/register">User Register</a>
+            <a href="/tanker/login">Tanker Login</a>
+            <a href="/tanker/register">Tanker Register</a>
+            <a href="/society/login">Society Login</a>
+            <a href="/society/register">Society Register</a>
+        </div>
+        <p>&copy; 2025 WaterWise. All rights reserved. | A smarter way to manage water for a sustainable future.</p>
+    </div>
+</footer>

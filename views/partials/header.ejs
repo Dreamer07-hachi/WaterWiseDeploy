@@ -1,0 +1,367 @@
+<!-- This partial contains the new header. You can include it in your other EJS files. -->
+<!-- It includes necessary CSS and JS to be self-contained and match the new theme. -->
+<style>
+    :root {
+        --primary-blue: #0d6efd;
+        --primary-blue-dark: #0a58ca;
+        --white-color: #ffffff;
+        --light-gray-bg: #f8f9fa;
+        --text-dark: #212529;
+        --text-light: #6c757d;
+        --border-color-light: #dee2e6;
+        --border-color-dark: rgba(255, 255, 255, 0.2);
+        --nav-height: 72px; /* height used for fixed header spacing */
+    }
+    .nav.glassy {
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        padding: 0 2rem;
+        height: var(--nav-height);
+        display: flex;
+        align-items: center;
+        position: fixed;     /* make header fixed to top */
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1100;
+        font-family: 'Poppins', sans-serif;
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        box-sizing: border-box;
+    }
+
+    /* ensure page content is not hidden under the fixed header */
+    body {
+        padding-top: var(--nav-height);
+    }
+
+    .nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .logo { 
+        height: 40px; 
+        width: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--white-color);
+    }
+    .text-gradient-emergency {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--white-color);
+        margin: 0;
+    }
+    .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .nav-menu {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .nav-menu .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1rem;
+        border: none;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 500;
+        font-size: 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+    .nav-menu .btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--white-color);
+    }
+    .nav-menu .btn-primary {
+        background-color: var(--white-color);
+        color: var(--primary-blue-dark);
+        font-weight: 600;
+    }
+    .nav-menu .btn-primary:hover {
+        background-color: var(--light-gray-bg);
+        color: var(--primary-blue-dark);
+    }
+    .no-underline { text-decoration: none; }
+    .mobile-menu-toggle { display: none; color: var(--white-color); }
+
+    /* User Avatar & Dropdown Styles */
+    .dropdown {
+        position: relative;
+    }
+    .user-avatar {
+        height: 40px;
+        width: 40px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: var(--white-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .user-avatar:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        background-color: var(--white-color);
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        border: 1px solid var(--border-color-light);
+        padding: 0.5rem;
+        min-width: 220px;
+        z-index: 1010;
+    }
+    .dropdown-menu.is-open { display: block; }
+    .user-info {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border-color-light);
+        margin-bottom: 0.5rem;
+    }
+    .user-info strong {
+        display: block;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    .user-info small { color: var(--text-light); }
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        color: var(--text-light);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .dropdown-item:hover {
+        background-color: var(--light-blue-bg);
+        color: var(--primary-blue);
+    }
+    
+    /* Responsive styles for mobile */
+    @media (max-width: 992px) {
+        .nav-menu {
+            display: none;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.4rem; /* reduced gap between items in dropdown */
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            padding: 1.5rem;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .dropdown { width: 100%; }
+        .dropdown-menu {
+            position: static;
+            box-shadow: none;
+            border: none;
+            width: 100%;
+            display: block;
+            padding: 0.25rem 0 0 0; /* reduced top padding */
+            background-color: transparent;
+        }
+        /* compact the spacing inside the mobile dropdown buttons */
+        .nav-menu .btn {
+            padding: 0.45rem 0.75rem;
+            font-size: 0.95rem;
+        }
+        .user-info {
+            padding-left: 0;
+            border-color: var(--border-color-dark);
+        }
+        .user-info strong, .user-info small { color: var(--white-color); }
+        .dropdown-item { color: rgba(255, 255, 255, 0.85); }
+        .dropdown-item:hover { background-color: rgba(255, 255, 255, 0.1); color: var(--white-color); }
+        
+        .nav-menu.is-open { display: flex; }
+        .mobile-menu-toggle {
+            display: block;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1100;
+        }
+    }
+    @media (max-width: 768px) {
+        /* reduce header btn font-size on narrow screens */
+        .nav-menu .btn {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+        }
+
+        /* optionally reduce primary button slightly to keep visual balance */
+        .nav-menu .btn-primary {
+            font-size: 0.9rem;
+            padding: 0.15rem 0.9rem;
+        }
+    }
+</style>
+
+<nav class="nav glassy">
+    <div class="nav-container">
+        <a href="/home" class="no-underline">
+            <div class="nav-logo">
+                <img src="/css/images/Waterwise.png" class="logo" alt="WaterWise Logo" />
+                <h1 class="text-gradient-emergency">WaterWise</h1>
+            </div>
+        </a>
+        <div class="nav-actions">
+            <div class="nav-menu" id="navMenu">
+                <a href="/book-tanker" class="btn btn-ghost">
+                    <i data-lucide="shopping-cart"></i>
+                    <span>Book Tanker</span>
+                </a>
+                <!-- <a href="/society-dashboard" class="btn btn-ghost">
+                    <i data-lucide="activity"></i>
+                    <span>Tracking</span> -->
+                </a>
+                <a href="/meter" class="btn btn-ghost">
+                    <i data-lucide="activity"></i>
+                    <span>Meter</span>
+                </a>
+                 <a href="/detection" class="btn btn-ghost">
+                    <i data-lucide="alert-triangle"></i>
+                    <span>Detection</span>
+                </a>
+                 <a href="/conservation" class="btn btn-ghost">
+                    <i data-lucide="droplet"></i>
+                    <span>Conservation</span>
+                </a>
+                <a href="/home" class="btn btn-ghost">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                
+                <% if (typeof user !== 'undefined' && user) { %>
+
+    <%# ⭐ THE LOGIC IS NOW CHANGED TO CHECK FOR A GOOGLE ID %>
+    <% if (user.googleId) { %>
+        <%# This block runs ONLY for users who logged in with Google %>
+        <div class="google-user-info" style="display: flex; align-items: center; gap: 1rem;">
+            <span style="font-weight: 500;">Hi, <%= user.name %></span>
+            <a href="/logout" class="btn btn-sm btn-outline-secondary" title="Logout">
+                <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+            </a>
+        </div>
+
+    <% } else { %>
+        <%# This block runs for users who logged in with phone and password %>
+        <div class="dropdown">
+            <% 
+                const nameParts = user.name.split(' ');
+                const initials = nameParts.length > 1 
+                    ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}` 
+                    : user.name.substring(0, 2);
+            %>
+            <div class="user-avatar" id="userMenuToggle" aria-label="Open user menu">
+                <span><%= initials.toUpperCase() %></span>
+            </div>
+            <div class="dropdown-menu" id="userMenu">
+                <div class="user-info">
+                    <strong><%= user.name %></strong>
+                    <small><%= user.phone %></small>
+                </div>
+                <a href="/logout" class="dropdown-item">
+                    <i data-lucide="log-out"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    <% } %>
+
+<% } else { %>
+    <%# This block runs when no one is logged in %>
+    <a href="/logout" class="btn btn-primary">
+        <i data-lucide="log-in"></i>
+        <span>Logout</span>
+    </a>
+<% } %>
+            </div>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu">
+                <i data-lucide="menu" id="menuIcon"></i>
+                <i data-lucide="x" style="display: none;" id="closeIcon"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<script>
+    (() => {
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const navMenu = document.getElementById('navMenu');
+        const menuIcon = document.getElementById('menuIcon');
+        const closeIcon = document.getElementById('closeIcon');
+        const userMenuToggle = document.getElementById('userMenuToggle');
+        const userMenu = document.getElementById('userMenu');
+
+        // --- Mobile Menu ---
+        if (mobileMenuToggle && navMenu && menuIcon && closeIcon) {
+            mobileMenuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = navMenu.classList.toggle('is-open');
+                menuIcon.style.display = isOpen ? 'none' : 'block';
+                closeIcon.style.display = isOpen ? 'block' : 'none';
+                if (userMenu) userMenu.classList.remove('is-open');
+            });
+        }
+
+        // --- User Profile Dropdown ---
+        if (userMenuToggle && userMenu) {
+             userMenuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userMenu.classList.toggle('is-open');
+                if (navMenu.classList.contains('is-open')) {
+                    navMenu.classList.remove('is-open');
+                    menuIcon.style.display = 'block';
+                    closeIcon.style.display = 'none';
+                }
+            });
+        }
+        
+        // --- Global Click Listener to Close Menus ---
+        document.addEventListener('click', (e) => {
+            if (navMenu.classList.contains('is-open') && !navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                navMenu.classList.remove('is-open');
+                menuIcon.style.display = 'block';
+                closeIcon.style.display = 'none';
+            }
+            if (userMenu && userMenu.classList.contains('is-open') && !userMenu.contains(e.target) && !userMenuToggle.contains(e.target)) {
+                 userMenu.classList.remove('is-open');
+            }
+        });
+    })();
+</script>
+

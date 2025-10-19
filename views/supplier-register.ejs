@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Become a Supplier - WaterWise</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary-blue: #0d6efd;
+            --primary-blue-dark: #0a58ca;
+            --light-blue-bg: #f0f7ff;
+            --white-bg: #ffffff;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --border-color: #e9ecef;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-blue-bg);
+        }
+
+        .form-card {
+            background-color: var(--white-bg);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-header-custom {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--light-blue-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .card-header-custom h1 { color: var(--primary-blue-dark); font-weight: 700; }
+        .card-body-custom { padding: 2rem 2.5rem; }
+        .form-section-title { font-weight: 600; color: var(--primary-blue-dark); margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid var(--light-blue-bg); padding-bottom: 0.5rem; }
+        .form-label { font-weight: 500; }
+        .btn-register {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            border: none; font-weight: 600; padding: 0.8rem; font-size: 1.1rem; border-radius: 8px;
+        }
+
+        /* Responsive styles */
+.form-card {
+    margin-top: clamp(1rem, 3vw, 2rem);
+    margin-bottom: clamp(1rem, 3vw, 2rem);
+    border-radius: clamp(12px, 2vw, 15px);
+    margin-left: clamp(0.5rem, 2vw, 1rem);
+    margin-right: clamp(0.5rem, 2vw, 1rem);
+}
+
+.card-header-custom {
+    padding: clamp(1.5rem, 3vw, 2rem);
+}
+
+.card-header-custom h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.card-body-custom {
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.form-section-title {
+    font-size: clamp(1rem, 3vw, 1.25rem);
+    margin-top: clamp(1rem, 2.5vw, 1.5rem);
+    margin-bottom: clamp(0.75rem, 2vw, 1rem);
+    padding-bottom: clamp(0.35rem, 1vw, 0.5rem);
+}
+
+.form-label {
+    font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+.form-control,
+.form-select {
+    padding: clamp(0.65rem, 2vw, 0.75rem) clamp(0.875rem, 2vw, 1rem);
+    font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+.btn-register {
+    padding: clamp(0.7rem, 2vw, 0.8rem);
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+    width: 100%;
+}
+
+/* Tablet breakpoint */
+@media (max-width: 768px) {
+    .form-card {
+        margin: 1.5rem 0.75rem;
+    }
+    
+    .card-header-custom {
+        padding: 1.5rem 1rem;
+    }
+    
+    .card-body-custom {
+        padding: 1.5rem 1.25rem;
+    }
+    
+    .form-section-title {
+        margin-top: 1.25rem;
+    }
+    
+    /* Stack form fields on tablet */
+    .row .col-md-6 {
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* Mobile breakpoint */
+@media (max-width: 480px) {
+    .form-card {
+        margin: 1rem 0.5rem;
+        border-radius: 12px;
+    }
+    
+    .card-header-custom {
+        padding: 1.25rem 0.75rem;
+    }
+    
+    .card-body-custom {
+        padding: 1.25rem 1rem;
+    }
+    
+    .form-section-title {
+        font-size: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.35rem;
+    }
+    
+    .form-label {
+        font-size: 0.9rem;
+        margin-bottom: 0.35rem;
+    }
+    
+    .form-control,
+    .form-select {
+        padding: 0.65rem 0.875rem;
+        font-size: 0.9rem;
+    }
+    
+    textarea.form-control {
+        min-height: 80px;
+    }
+    
+    .btn-register {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+    }
+    
+    /* Add more spacing between form groups */
+    .mb-3 {
+        margin-bottom: 0.875rem !important;
+    }
+    
+    .row .col-md-6 {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+    .form-card {
+        margin: 0.75rem 0.25rem;
+    }
+    
+    .card-body-custom {
+        padding: 1rem 0.75rem;
+    }
+    
+    .form-control,
+    .form-select {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .form-label {
+        font-size: 0.875rem;
+    }
+}
+
+/* Improve input focus on mobile */
+@media (max-width: 768px) {
+    .form-control:focus,
+    .form-select:focus {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+}
+    </style>
+</head>
+<body>
+    <%- include('partials/header-prehome') %>
+    
+    <main class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <% if (typeof message !== 'undefined' && message) { %>
+                    <div class="alert alert-success mt-3"><%= message %></div>
+                <% } %>
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div class="alert alert-danger mt-3"><%= error %></div>
+                <% } %>
+                <div class="form-card">
+                    <div class="card-header-custom">
+                        <h1>Partner with Us</h1>
+                        <p class="text-muted mb-0">Register your water tanker service to reach more customers.</p>
+                    </div>
+                    <div class="card-body-custom">
+                        <form action="/register-supplier" method="POST">
+                            
+                            <h5 class="form-section-title">Business & Contact Details</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="businessName" class="form-label">Business Name</label>
+                                    <input type="text" class="form-control" id="businessName" name="businessName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="contactPerson" class="form-label">Contact Person</label>
+                                    <input type="text" class="form-control" id="contactPerson" name="contactPerson" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phoneNumber" class="form-label">Contact Phone Number</label>
+                                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required>
+                            </div>
+
+                            <!-- ADD THIS NEW PASSWORD FIELD -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Create Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+
+                            <h5 class="form-section-title">Your First Tanker's Details</h5>
+                             <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="vehicleNumber" class="form-label">Vehicle Registration No.</label>
+                                    <input type="text" class="form-control" id="vehicleNumber" name="vehicleNumber" placeholder="e.g., MH 12 AB 1234" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="capacity" class="form-label">Capacity (in Litres)</label>
+                                    <input type="number" class="form-control" id="capacity" name="capacity" placeholder="e.g., 5000" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Price per 1000 Litres (₹)</label>
+                                <input type="number" class="form-control" id="price" name="price" placeholder="e.g., 300" required>
+                            </div>
+
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary fw-bold btn-register">Submit Application</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                
+
+            </div>
+        </div>
+    </main>
+    <%- include('partials/footer-prehome') %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
+

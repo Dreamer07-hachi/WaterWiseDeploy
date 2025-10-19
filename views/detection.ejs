@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Leak Detection</title>
+    <link rel="stylesheet" href="css/detection.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <%- include ('partials/header') %>
+    <main>
+        <div class="card">
+            <h2><i class="fas fa-user-circle"></i> User Selection</h2>
+            <form id="user-form">
+                <label for="userIdInput">Enter Your User ID:</label>
+                <input type="number" id="userIdInput" name="userIdInput" required>
+                <button type="submit">Load Dashboard</button>
+            </form>
+        </div>
+        
+        <div id="dashboard-content" style="display: none;">
+            <div class="card">
+                <h2><i class="fas fa-chart-line"></i> Water Consumption</h2>
+                <canvas id="consumptionChart"></canvas>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-exclamation-triangle"></i> Leak Detection Alerts</h2>
+                <div id="alerts-container" class="alert-list">
+                    <div class="alert-item no-alerts">
+                        <p>No new leaks detected.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fas fa-edit"></i> Log Your Data</h2>
+                <form id="consumption-form">
+                    <label for="consumption">Consumption (Liters):</label>
+                    <input type="number" id="consumption" name="consumption" required>
+                    <button type="submit">Log Consumption</button>
+                </form>
+                <p id="form-message"></p>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let currentUser;
+        let myChart;
+
+        async function fetchAndDisplayAlerts() {
+            if (!currentUser) return;
+            try {
+                const response = await fetch(`/api/leaks?user_id=${currentUser}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const alerts = await response.json();
+                const alertsContainer = document.getElementById('alerts-container');
+                
+                alertsContainer.innerHTML = '';
+
+                if (alerts.length === 0) {
+                    alertsContainer.innerHTML = `
+                        <div class="alert-item no-alerts">
+                            <i class="fas fa-check-circle"></i>
+                            <p>No new leaks detected.</p>
+                        </div>
+                    `;
+                } else {
+                    alerts.forEach(alert => {
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert-item';
+                        alertDiv.innerHTML = `
+                            <h4><i class="fas fa-exclamation-triangle"></i> Potential Leak Detected</h4>
+                            <p>Type: <strong>${alert.leak_type}</strong></p>
+                            <p>Anomalous Consumption: ${alert.anomalous_consumption_liters.toFixed(2)} liters</p>
+                            <p>Estimated Cost: ₹${alert.cost_inr.toFixed(2)}</p>
+                            <small>Detected at: ${new Date(alert.detection_timestamp).toLocaleString()}</small>
+                        `;
+                        alertsContainer.appendChild(alertDiv);
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to fetch alerts:', error);
+            }
+        }
+        
+        async function fetchAndDisplayChart() {
+            if (!currentUser) return;
+            try {
+                const response = await fetch(`/api/consumption_data?user_id=${currentUser}`);
+                if (!response.ok) {
+                     throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                const labels = data.map(entry => new Date(entry.timestamp).toLocaleTimeString());
+                const consumptionValues = data.map(entry => entry.consumption_liters);
+
+                if (myChart) {
+                    myChart.destroy();
+                }
+
+                myChart = new Chart(
+                    document.getElementById('consumptionChart'),
+                    {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Liters Consumed',
+                                data: consumptionValues,
+                                borderColor: '#1976D2',
+                                backgroundColor: 'rgba(25, 118, 210, 0.2)',
+                                fill: true,
+                                tension: 0.2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: { display: true, text: 'Consumption (Liters)' }
+                                }
+                            }
+                        }
+                    }
+                );
+            } catch (error) {
+                console.error('Failed to fetch chart data:', error);
+            }
+        }
+
+        document.getElementById('user-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            currentUser = document.getElementById('userIdInput').value;
+            if (currentUser) {
+                document.getElementById('dashboard-content').style.display = 'block';
+                fetchAndDisplayAlerts();
+                fetchAndDisplayChart();
+                setInterval(fetchAndDisplayAlerts, 10000); 
+                setInterval(fetchAndDisplayChart, 10000);
+            }
+        });
+
+        document.getElementById('consumption-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const consumption = document.getElementById('consumption').value;
+            const formMessage = document.getElementById('form-message');
+            
+            try {
+                const response = await fetch('/api/consumption', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: parseInt(currentUser),
+                        consumption_liters: parseFloat(consumption)
+                    })
+                });
+
+                if (response.ok) {
+                    formMessage.textContent = 'Consumption logged successfully! The system will check for leaks shortly.';
+                    formMessage.style.color = '#1976D2';
+                    setTimeout(() => {
+                        fetchAndDisplayAlerts();
+                        fetchAndDisplayChart();
+                    }, 5000); 
+                } else {
+                    formMessage.textContent = 'Failed to log consumption. Please try again.';
+                    formMessage.style.color = '#D32F2F';
+                }
+            } catch (error) {
+                formMessage.textContent = 'An error occurred. Please check the server.';
+                formMessage.style.color = '#D32F2F';
+                console.error('Form submission error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

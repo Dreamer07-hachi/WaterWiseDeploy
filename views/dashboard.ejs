@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Consumption Dashboard</title>
+    <link rel="stylesheet" href="./styles/styles.css">
+    <style>
+        .chart-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        nav {
+            text-align: center;
+            margin-top: 20px;
+        }
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #1877f2;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px 20px 10px;
+            flex-wrap: wrap;
+        }
+        .controls div {
+            margin: 5px;
+        }
+        .controls button {
+            padding: 8px 16px;
+            border: 1px solid #1877f2;
+            background-color: #fff;
+            color: #1877f2;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .controls button.active {
+            background-color: #1877f2;
+            color: #fff;
+        }
+
+        /* Responsive styles */
+.chart-container {
+    max-width: clamp(320px, 90vw, 800px);
+    margin: clamp(15px, 4vw, 30px) auto;
+    padding: clamp(15px, 3vw, 20px);
+}
+
+nav a {
+    margin: 0 clamp(8px, 2vw, 15px);
+    font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+.controls button {
+    padding: clamp(6px, 1.5vw, 8px) clamp(12px, 2.5vw, 16px);
+    font-size: clamp(0.85rem, 2vw, 1rem);
+}
+
+/* Tablet breakpoint */
+@media (max-width: 768px) {
+    .chart-container {
+        border-radius: 10px;
+        margin: 20px 10px;
+    }
+    
+    nav {
+        margin-top: 15px;
+    }
+    
+    .controls {
+        padding: 0 5px 15px 5px;
+        gap: 5px;
+    }
+    
+    .controls div {
+        margin: 3px;
+    }
+}
+
+/* Mobile breakpoint */
+@media (max-width: 480px) {
+    .chart-container {
+        padding: 15px 10px;
+        border-radius: 8px;
+        margin: 15px 5px;
+    }
+    
+    nav {
+        margin-top: 10px;
+    }
+    
+    nav a {
+        display: inline-block;
+        margin: 5px 8px;
+        font-size: 0.9rem;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0 5px 10px 5px;
+    }
+    
+    .controls div {
+        width: 100%;
+        margin: 3px 0;
+    }
+    
+    .controls button {
+        width: 100%;
+        padding: 8px 12px;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+    .chart-container {
+        padding: 12px 8px;
+        margin: 10px 5px;
+    }
+    
+    nav a {
+        margin: 4px 6px;
+        font-size: 0.85rem;
+    }
+}
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <!-- <a href="/logout">Logout</a> -->
+    </nav>
+
+    <div class="dashboard-grid">
+        <div class="chart-container main-chart">
+            <h2>Your Water Consumption</h2>
+            <div class="controls">
+                <div class="chart-type-controls">
+                    <span>Chart Type:</span>
+                    <button id="barBtn" class="active">Bar</button>
+                    <button id="lineBtn">Line</button>
+                </div>
+                <div class="date-controls">
+                    <label for="dateRangeSelect">Period:</label>
+                    <select id="dateRangeSelect">
+                        <option value="week">Last 7 Days</option>
+                        <option value="month">Last 30 Days</option>
+                        <option value="year">Last Year</option>
+                    </select>
+                </div>
+            </div>
+            <canvas id="consumptionChart"></canvas>
+        </div>
+
+        <div class="side-panel">
+            <div class="cta-container">
+                <a href="/meter" class="cta-button">Enter New Reading</a>
+            </div>
+
+            <div class="chart-container small-chart">
+                <h2 id="gauge-title">Monthly Goal Progress</h2>
+                <canvas id="gaugeChart"></canvas>
+                <div class="gauge-details">
+                    <p>Used: <span id="gauge-usage">0 m³</span></p>
+                    <p>Goal: <span id="gauge-goal">0 m³</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="report-container">
+        <h2>Consumption Report</h2>
+        <p id="report-summary">Loading report...</p>
+        <h3>Water Saving Tips:</h3>
+        <ul id="report-tips"></ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script>
+        let consumptionChart;
+
+        // --- Main Chart Functions ---
+        function createEmptyChart() {
+            const ctx = document.getElementById('consumptionChart').getContext('2d');
+            consumptionChart = new Chart(ctx, {
+                type: 'bar', data: { labels: [], datasets: [{ label: 'Consumption (m³)', data: [], backgroundColor: 'rgba(24, 119, 242, 0.5)', borderColor: 'rgba(24, 119, 242, 1)', borderWidth: 1, fill: false, tension: 0.1 }] },
+                options: { scales: { x: { type: 'time', time: { unit: 'day', displayFormats: { day: 'yyyy-MM-dd' } }, title: { display: false } }, y: { beginAtZero: true } } }
+            });
+        }
+        async function updateChartData() {
+            const range = document.getElementById('dateRangeSelect').value;
+            const canvas = document.getElementById('consumptionChart');
+            try {
+                const response = await fetch(`/api/readings?range=${range}`, { cache: 'no-store' });
+                if (!response.ok) throw new Error('Network response was not ok.');
+                const consumptionData = await response.json();
+                
+                const noDataMsg = document.getElementById('noDataMsg');
+                if (noDataMsg) noDataMsg.remove();
+
+                if (consumptionData.length === 0) {
+                    canvas.style.display = 'none';
+                    document.querySelector('.main-chart').insertAdjacentHTML('beforeend', '<p id="noDataMsg">No consumption data for this period.</p>');
+                    if (consumptionChart) { consumptionChart.data.labels = []; consumptionChart.data.datasets[0].data = []; consumptionChart.update(); }
+                    return;
+                }
+                canvas.style.display = 'block';
+                consumptionChart.data.labels = consumptionData.map(item => item.date);
+                consumptionChart.data.datasets[0].data = consumptionData.map(item => item.consumption);
+                consumptionChart.update();
+            } catch (error) { console.error('Error in updateChartData:', error); }
+        }
+
+        // --- Gauge Chart Function ---
+        async function createGaugeChart() {
+            try {
+                const response = await fetch('/api/gauge', { cache: 'no-store' });
+                const data = await response.json();
+
+                const currentUsage = data.currentUsage;
+                const goal = data.goal;
+                const remaining = Math.max(0, goal - currentUsage);
+
+               
+                // Update the text elements with the fetched data
+                document.getElementById('gauge-title').textContent = `${data.month} Goal Progress`;
+                document.getElementById('gauge-usage').textContent = `${currentUsage.toFixed(2)} m³`;
+                document.getElementById('gauge-goal').textContent = `${goal.toFixed(2)} m³`;
+            
+
+                const ctx = document.getElementById('gaugeChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Used', 'Remaining'],
+                        datasets: [{
+                            data: [currentUsage, remaining],
+                            backgroundColor: [ 'rgba(24, 119, 242, 0.7)', 'rgba(220, 220, 220, 0.7)' ],
+                            borderColor: [ 'rgba(24, 119, 242, 1)', 'rgba(220, 220, 220, 1)' ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        rotation: -90,
+                        circumference: 180,
+                        cutout: '60%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { enabled: false }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error creating gauge chart:", error);
+            }
+        }
+        
+        // --- Report Function ---
+        
+        async function fetchReportData() {
+            try {
+                const response = await fetch('/api/report', { cache: 'no-store' });
+                const data = await response.json();
+
+                // Find the HTML elements
+                const summaryElement = document.getElementById('report-summary');
+                const tipsList = document.getElementById('report-tips');
+
+                // Update the summary text
+                summaryElement.textContent = data.summary;
+
+                // Clear any old tips and add the new ones
+                tipsList.innerHTML = '';
+                data.tips.forEach(tip => {
+                    const li = document.createElement('li');
+                    li.textContent = tip;
+                    tipsList.appendChild(li);
+                });
+
+            } catch (error) {
+                console.error("Error fetching report:", error);
+                document.getElementById('report-summary').textContent = 'Could not load report data.';
+            }
+        }
+        
+        // --- Event Listeners and Initial Load ---
+        const barBtn = document.getElementById('barBtn');
+        const lineBtn = document.getElementById('lineBtn');
+        const dateRangeSelect = document.getElementById('dateRangeSelect');
+
+        barBtn.addEventListener('click', () => {
+            consumptionChart.config.type = 'bar';
+            consumptionChart.data.datasets[0].fill = false;
+            barBtn.classList.add('active');
+            lineBtn.classList.remove('active');
+            consumptionChart.update();
+        });
+        lineBtn.addEventListener('click', () => {
+            consumptionChart.config.type = 'line';
+            consumptionChart.data.datasets[0].fill = true;
+            lineBtn.classList.add('active');
+            barBtn.classList.remove('active');
+            consumptionChart.update();
+        });
+        dateRangeSelect.addEventListener('change', updateChartData);
+        
+        window.onload = () => {
+            createEmptyChart();
+            updateChartData();
+            createGaugeChart();
+            fetchReportData();
+        };
+    </script>
+</body>
+</html>

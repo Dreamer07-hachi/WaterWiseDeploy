@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Conservation Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1a202c;
+            padding: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                padding: 2rem;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            body {
+                padding: 3rem;
+            }
+        }
+
+        .container {
+            max-width: 64rem;
+            margin: auto;
+            /* Removed background, border-radius, and box-shadow to make it blend with the body */
+            padding: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 2.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                padding: 4rem;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .header {
+                margin-bottom: 3rem;
+            }
+        }
+        
+        .header-title {
+            font-size: 1.875rem;
+            font-weight: 800;
+            background-image: linear-gradient(to right, #007bff, #00b0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .header-title {
+                font-size: 3rem;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .header-title {
+                font-size: 4rem;
+            }
+        }
+
+        .header-subtitle {
+            font-size: 1rem;
+            color: #4a5568;
+        }
+        
+        @media (min-width: 768px) {
+            .header-subtitle {
+                font-size: 1.125rem;
+            }
+        }
+
+        .section {
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        @media (min-width: 768px) {
+            .section {
+                margin-bottom: 3rem;
+            }
+        }
+
+        .progress-section {
+            background-color: #eff6ff;
+        }
+
+        .tip-section {
+            background-color: #ecfdf5;
+        }
+        
+        .challenge-section {
+            background-color: #f7fafc;
+        }
+        
+        .solution-section {
+            background-color: #dbeafe;
+        }
+        
+        .section-heading {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        @media (min-width: 768px) {
+            .section-heading {
+                font-size: 1.5rem;
+            }
+        }
+
+        .section-heading svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .section-heading.green svg {
+            color: #059669;
+        }
+        
+        .section-heading.gray svg {
+            color: #4a5568;
+        }
+        
+        .section-heading.blue svg {
+            color: #2563eb;
+        }
+
+        .progress-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            line-height: 1.5;
+            gap: 1rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+        }
+
+        .progress-bar-text {
+            font-size: 1.125rem;
+            color: #4a5568;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #bfdbfe;
+            border-radius: 9999px;
+            height: 0.75rem;
+        }
+        
+        .progress-fill {
+            background-color: #3b82f6;
+            border-radius: 9999px;
+            height: 0.75rem;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .progress-description {
+            width: 100%;
+            color: #4a5568;
+            font-size: 0.875rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .tip-text {
+            font-size: 1.125rem;
+            color: #4a5568;
+            line-height: 1.625;
+            font-style: italic;
+        }
+
+        .challenge-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .challenge-item {
+            padding: 1rem;
+            background-color: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            transition: box-shadow 0.3s ease-in-out;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .challenge-item:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .challenge-checkbox {
+            margin-right: 1rem;
+            transform: scale(1.5);
+            margin-top: 0.2rem;
+            cursor: pointer;
+        }
+
+        .challenge-title-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .challenge-title {
+            font-weight: 600;
+            color: #2563eb;
+            transition: color 0.3s;
+        }
+
+        .challenge-description {
+            font-size: 0.875rem;
+            color: #4a5568;
+            margin-top: 0.25rem;
+        }
+
+        .challenge-completed .challenge-title {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+
+        .solution-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            color: #4a5568;
+        }
+
+        .solution-item h3 {
+            font-weight: 600;
+            font-size: 1.125rem;
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+
+        .solution-item p {
+            line-height: 1.625;
+            margin-bottom: 0.5rem;
+        }
+
+        .solution-item span {
+            font-weight: 500;
+            color: #2563eb;
+        }
+    </style>
+</head>
+<%- include('partials/header') %>   
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="header-title">
+                Water Conservation Hub
+            </h1>
+            <p class="header-subtitle">
+                Empowering urban households to save every drop.
+            </p>
+        </header>
+
+        <!-- Daily Tip Section (Moved to the top) -->
+        <section class="section tip-section">
+            <h2 class="section-heading green">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;">
+                    <path d="M11.75 3a.75.75 0 0 0-.75.75v7.5a.75.75 0 0 0 1.5 0v-7.5a.75.75 0 0 0-.75-.75Z" />
+                    <path fill-rule="evenodd" d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Zm0 2a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z" clip-rule="evenodd" />
+                </svg>
+                Daily Conservation Tip
+            </h2>
+            <p id="dailyTip" class="tip-text">
+                <!-- Tip will be inserted here by JavaScript -->
+            </p>
+        </section>
+
+        <!-- Your Conservation Score Section -->
+        <section class="section progress-section">
+            <h2 class="section-heading">
+                Your Progress
+            </h2>
+            <div class="progress-content">
+                <div class="progress-bar-container">
+                    <p class="progress-bar-text">
+                        Conservation Score: <span id="conservationScoreValue" style="font-weight: 700; color: #2563eb;">0/100</span>
+                    </p>
+                    <div class="progress-bar">
+                        <div id="progressBarFill" class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="progress-description">
+                    <p>Track your impact and see how your small changes add up to a big difference for your community and the environment.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Challenges Section -->
+        <section class="section challenge-section">
+            <h2 class="section-heading gray">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;">
+                    <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .536 1.258l-8.542 8.542a.75.75 0 0 1-1.25-.53l1.62-7.185H2.75a.75.75 0 0 1-.536-1.257l8.542-8.542a.75.75 0 0 1 .896-.179Z" clip-rule="evenodd" />
+                </svg>
+                Take a Challenge
+            </h2>
+            <ul id="challengeList" class="challenge-list">
+                <!-- Challenges will be dynamically inserted here -->
+            </ul>
+        </section>
+
+        <!-- Localized Solutions Section -->
+        <section class="section solution-section">
+            <h2 class="section-heading blue">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;">
+                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm14.28-1.772a.75.75 0 1 0-1.06-1.06l-4.116 4.116L9.75 11.39a.75.75 0 0 0-1.06 1.06l-1.5 1.5a.75.75 0 0 0 1.06 1.06l2.03-2.03 4.496-4.496Z" clip-rule="evenodd" />
+                </svg>
+                Localized Solutions for Urban India
+            </h2>
+            <div class="solution-content">
+                <div>
+                    <h3>Rainwater Harvesting</h3>
+                    <p>
+                        For residential societies, implementing rooftop rainwater harvesting can significantly supplement water supply. Simple systems can be installed to collect and store rainwater in underground sumps or tanks, which can then be used for non-potable purposes like garden irrigation, flushing toilets, and cleaning.
+                    </p>
+                    <p>
+                        <span>Did you know?</span> Many cities in India are making rainwater harvesting mandatory for new constructions and large buildings. Check with your local civic body (e.g., BMC, BBMP) for specific guidelines and potential incentives.
+                    </p>
+                    
+                </div>
+                <div>
+                    <h3>Water-Efficient Fixtures</h3>
+                    <p>
+                        Replacing standard taps, showerheads, and flush systems with water-efficient fixtures can cut down household water usage by 30-50%. Look for fixtures with low-flow aerators and dual-flush toilets. These are readily available in hardware stores across India.
+                    </p>
+                    <p>
+                        <span>Example:</span> A standard faucet uses about 15 liters per minute, while a low-flow aerator can reduce this to 6 liters per minute, providing the same water pressure with less water.
+                    </p>
+                </div>
+                <div>
+                    <h3>Greywater Recycling</h3>
+                    <p>
+                        Greywater is the water from your sinks, showers, and washing machines. Instead of letting it go down the drain, it can be filtered and reused for non-drinking purposes. A simple greywater recycling system can be installed to redirect this water for flushing toilets, washing vehicles, or watering plants.
+                    </p>
+                    <p>
+                        <span>Benefit:</span> This reduces the demand for fresh, potable water for tasks that don't require it, significantly lowering your overall consumption.
+                    </p>
+                </div>
+                <div>
+                    <h3>Smart Water Meters</h3>
+                    <p>
+                        A smart water meter tracks your water usage in real-time and can alert you to potential leaks. By providing detailed insights into your consumption patterns, it helps you identify water-saving opportunities and encourages responsible use. These meters can be connected to a mobile app for easy monitoring.
+                    </p>
+                    <p>
+                        <span>How it helps:</span> An undetected leak can waste thousands of liters of water per year. A smart meter can send you an immediate notification if an unusual flow rate is detected.
+                    </p>   
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const tips = [
+            "Use a bucket instead of a hose to wash your car. This can save hundreds of liters of water per wash!",
+            "Did you know that fixing a single leaky tap can save up to 700 liters of water per week? Check for drips regularly!",
+            "While washing dishes, don't let the water run continuously. Use a basin to collect water for rinsing.",
+            "Water your plants in the morning or evening to reduce evaporation and ensure the water reaches the roots.",
+            "Collect the water used to wash rice and vegetables and use it to water your home garden."
+        ];
+
+        const challenges = [
+            { id: 'c1', title: 'The 7-Day Shower Challenge', description: 'Aim for showers of 5 minutes or less.', completed: false },
+            { id: 'c2', title: 'Drip-Free Week', description: 'Check all taps and pipes for leaks and fix them immediately.', completed: false },
+            { id: 'c3', title: 'Kitchen Water Saver', description: 'Collect water used for washing vegetables to water your plants.', completed: false },
+            { id: 'c4', title: 'Turn Off the Tap', description: 'Turn off the tap while brushing your teeth or shaving.', completed: false },
+            { id: 'c5', title: 'Efficient Laundry', description: 'Run the washing machine only with a full load.', completed: false },
+            { id: 'c6', title: 'Defrost Smartly', description: 'Thaw frozen food in the refrigerator instead of using running water.', completed: false },
+            { id: 'c7', title: 'Check Your Meter', description: 'Read your water meter before and after a two-hour period when no water is being used. If it changes, you have a leak.', completed: false },
+            { id: 'c8', title: 'Washing Dishes', description: 'Use a double-basin system (one for washing, one for rinsing) to save water.', completed: false },
+            { id: 'c9', title: 'Optimize Toilets', description: 'Place a plastic bottle filled with water in your toilet tank to reduce the volume of water used per flush.', completed: false },
+            { id: 'c10', title: 'Rainwater for Plants', description: 'Place a bucket outside to collect rainwater for your plants.', completed: false }
+        ];
+
+        const challengesToShow = 3;
+
+        const dailyTipElement = document.getElementById('dailyTip');
+        const challengeListElement = document.getElementById('challengeList');
+        const scoreValueElement = document.getElementById('conservationScoreValue');
+        const progressBarFillElement = document.getElementById('progressBarFill');
+
+        function updateScore() {
+            const completedChallenges = challenges.filter(c => c.completed).length;
+            const conservationScore = (completedChallenges / challenges.length) * 100;
+            scoreValueElement.textContent = `${completedChallenges * 10}/100`;
+            progressBarFillElement.style.width = `${conservationScore}%`;
+        }
+
+        function renderChallenges() {
+            challengeListElement.innerHTML = '';
+            const uncompletedChallenges = challenges.filter(c => !c.completed);
+            const challengesToDisplay = uncompletedChallenges.slice(0, challengesToShow);
+            
+            challengesToDisplay.forEach(challenge => {
+                const li = document.createElement('li');
+                li.className = 'challenge-item';
+                li.dataset.id = challenge.id;
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'challenge-checkbox';
+                checkbox.checked = challenge.completed;
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'challenge-title-container';
+
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'challenge-title';
+                titleSpan.textContent = challenge.title;
+
+                const descriptionP = document.createElement('p');
+                descriptionP.className = 'challenge-description';
+                descriptionP.textContent = challenge.description;
+
+                contentDiv.appendChild(titleSpan);
+                contentDiv.appendChild(descriptionP);
+                li.appendChild(checkbox);
+                li.appendChild(contentDiv);
+                challengeListElement.appendChild(li);
+            });
+        }
+
+        challengeListElement.addEventListener('change', (event) => {
+            const checkbox = event.target;
+            if (checkbox.type === 'checkbox') {
+                const challengeItem = checkbox.closest('.challenge-item');
+                const challengeId = challengeItem.dataset.id;
+                
+                const challenge = challenges.find(c => c.id === challengeId);
+                if (challenge && !challenge.completed) {
+                    challenge.completed = true;
+                    checkbox.disabled = true;
+                    challengeItem.classList.add('challenge-completed');
+                    updateScore();
+
+                    // Wait 5 seconds before re-rendering the list
+                    setTimeout(() => {
+                        renderChallenges();
+                    }, 5000);
+                }
+            }
+        });
+
+        window.onload = function() {
+            if (dailyTipElement) {
+                const randomIndex = Math.floor(Math.random() * tips.length);
+                dailyTipElement.textContent = tips[randomIndex];
+            }
+            
+            updateScore();
+            renderChallenges();
+        };
+    </script>
+</body>
+</html>

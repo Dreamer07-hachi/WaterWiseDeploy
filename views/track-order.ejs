@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Order - WaterWise</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        :root {
+            --primary-blue: #0d6efd;
+            --primary-blue-dark: #0a58ca;
+            --light-blue-bg: #f0f7ff;
+            --white-bg: #ffffff;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --border-color: #e9ecef;
+            --success-color: #198754;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-blue-bg);
+        }
+
+        .tracking-card {
+            background-color: var(--white-bg);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+
+        .tracking-header {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: var(--light-blue-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tracking-header h1 {
+            color: var(--primary-blue-dark);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        #map {
+            height: 450px;
+            width: 100%;
+        }
+
+        .tracking-body {
+            padding: 1.5rem 2rem;
+        }
+        
+        .status-timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .status-timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 4px;
+            background-color: var(--border-color);
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        
+        .timeline-progress {
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            height: 4px;
+            background-color: var(--primary-blue);
+            transform: translateY(-50%);
+            z-index: 2;
+            width: 0%; /* Initially 0 */
+            transition: width 0.5s ease;
+        }
+
+        .status-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 3;
+            width: 80px;
+        }
+        
+        .status-icon {
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            color: var(--text-muted);
+            display: grid;
+            place-items: center;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            border: 4px solid var(--light-blue-bg);
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        
+        .status-step.active .status-icon {
+            background-color: var(--primary-blue);
+            color: var(--white-bg);
+        }
+        
+        .status-step p {
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .status-step.active p {
+            color: var(--text-dark);
+        }
+        
+        .order-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            text-align: center;
+        }
+        
+        .info-box h6 {
+            font-weight: 600;
+            color: var(--primary-blue-dark);
+        }
+        
+        .info-box p {
+            color: var(--text-muted);
+            margin: 0;
+        }
+        
+        /* Custom Leaflet Icon Styles */
+        .leaflet-marker-icon.original-truck-icon {
+            font-size: 2.5rem;
+            color: var(--primary-blue-dark);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            background: none;
+            border: none;
+            box-shadow: none;
+        }
+
+        .leaflet-marker-icon.custom-icon-home {
+            background-color: var(--primary-blue);
+            color: white;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .leaflet-marker-icon .icon-inner {
+            transform: rotate(45deg);
+        }
+        
+         .leaflet-marker-icon.custom-icon-home {
+             background-color: var(--success-color);
+         }
+
+         /* Responsive styles */
+.tracking-card {
+    margin-top: clamp(1rem, 3vw, 2rem);
+    border-radius: clamp(12px, 2vw, 15px);
+    margin-left: clamp(0.5rem, 2vw, 1rem);
+    margin-right: clamp(0.5rem, 2vw, 1rem);
+}
+
+.tracking-header {
+    padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.tracking-header h1 {
+    font-size: clamp(1.35rem, 4vw, 1.8rem);
+}
+
+.tracking-header p {
+    font-size: clamp(0.85rem, 2vw, 1rem);
+}
+
+#map {
+    height: clamp(300px, 50vw, 450px);
+}
+
+.tracking-body {
+    padding: clamp(1rem, 3vw, 2rem);
+}
+
+.status-timeline {
+    margin-bottom: clamp(1.5rem, 3vw, 2rem);
+}
+
+.status-step {
+    width: clamp(60px, 15vw, 80px);
+}
+
+.status-icon {
+    height: clamp(35px, 8vw, 40px);
+    width: clamp(35px, 8vw, 40px);
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    margin-bottom: clamp(0.35rem, 1vw, 0.5rem);
+    border-width: clamp(3px, 0.5vw, 4px);
+}
+
+.status-step p {
+    font-size: clamp(0.7rem, 2vw, 0.85rem);
+}
+
+.order-info-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.info-box h6 {
+    font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+.info-box p {
+    font-size: clamp(0.85rem, 2vw, 1rem);
+}
+
+.leaflet-marker-icon.original-truck-icon {
+    font-size: clamp(2rem, 5vw, 2.5rem);
+}
+
+/* Tablet breakpoint */
+@media (max-width: 768px) {
+    .tracking-card {
+        margin: 1.5rem 0.75rem;
+    }
+    
+    .tracking-header {
+        padding: 1.25rem 1rem;
+    }
+    
+    #map {
+        height: 350px;
+    }
+    
+    .tracking-body {
+        padding: 1.25rem 1rem;
+    }
+    
+    .status-timeline::before {
+        left: 10%;
+        right: 10%;
+    }
+    
+    .timeline-progress {
+        left: 10%;
+    }
+    
+    .order-info-grid {
+        gap: 1.25rem;
+    }
+}
+
+/* Mobile breakpoint */
+@media (max-width: 480px) {
+    .tracking-card {
+        margin: 1rem 0.5rem;
+        border-radius: 12px;
+    }
+    
+    .tracking-header {
+        padding: 1rem 0.75rem;
+    }
+    
+    .tracking-header h1 {
+        font-size: 1.35rem;
+        margin-bottom: 0.15rem;
+    }
+    
+    #map {
+        height: 300px;
+    }
+    
+    .tracking-body {
+        padding: 1rem 0.75rem;
+    }
+    
+    .status-timeline {
+        margin-bottom: 1.5rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+    
+    .status-timeline::before {
+        left: 15%;
+        right: 15%;
+        height: 3px;
+    }
+    
+    .timeline-progress {
+        left: 15%;
+        height: 3px;
+    }
+    
+    .status-step {
+        width: 60px;
+        min-width: 60px;
+    }
+    
+    .status-icon {
+        height: 35px;
+        width: 35px;
+        font-size: 1rem;
+        margin-bottom: 0.35rem;
+        border-width: 3px;
+    }
+    
+    .status-step p {
+        font-size: 0.7rem;
+        line-height: 1.2;
+    }
+    
+    .order-info-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        text-align: left;
+        padding: 0 0.5rem;
+    }
+    
+    .info-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        background-color: var(--light-blue-bg);
+        border-radius: 8px;
+    }
+    
+    .info-box h6 {
+        font-size: 0.85rem;
+        margin-bottom: 0;
+    }
+    
+    .info-box p {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+    
+    .leaflet-marker-icon.original-truck-icon {
+        font-size: 2rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+    .tracking-card {
+        margin: 0.75rem 0.25rem;
+    }
+    
+    .tracking-header {
+        padding: 0.875rem 0.5rem;
+    }
+    
+    .tracking-body {
+        padding: 0.875rem 0.5rem;
+    }
+    
+    #map {
+        height: 250px;
+    }
+    
+    .status-step {
+        width: 55px;
+        min-width: 55px;
+    }
+    
+    .status-icon {
+        height: 32px;
+        width: 32px;
+        font-size: 0.9rem;
+    }
+    
+    .status-step p {
+        font-size: 0.65rem;
+    }
+    
+    .info-box {
+        padding: 0.65rem;
+    }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+    #map {
+        height: 250px;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <%- include('partials/header') %>
+    
+    <main class="container">
+        <div class="tracking-card">
+            <div class="tracking-header">
+                <h1>Tracking Order #<%= order.id %></h1>
+                <p class="text-muted mb-0">Live delivery updates from <strong><%= order.business_name %></strong></p>
+            </div>
+            
+            <div id="map"></div>
+
+            <div class="tracking-body">
+                <div class="status-timeline">
+                    <div class="timeline-progress" id="timelineProgress"></div>
+                    <div class="status-step active" id="statusConfirmed">
+                        <div class="status-icon"><i class="fas fa-check"></i></div>
+                        <p>Confirmed</p>
+                    </div>
+                    <div class="status-step" id="statusEnRoute">
+                        <div class="status-icon"><i class="fas fa-truck"></i></div>
+                        <p>En-Route</p>
+                    </div>
+                    <div class="status-step" id="statusDelivered">
+                        <div class="status-icon"><i class="fas fa-flag-checkered"></i></div>
+                        <p>Delivered</p>
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+
+                <div class="order-info-grid">
+                    <div class="info-box">
+                        <h6>Supplier</h6>
+                        <p><%= order.business_name %></p>
+                    </div>
+                    <div class="info-box">
+                        <h6>Delivery Address</h6>
+                        <p><%= order.delivery_address %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        lucide.createIcons();
+        
+        const orderId = '<%= order.id %>';
+        const initialCoords = <%- JSON.stringify(initialCoords) %>;
+        const deliveryAddress = "<%= order.delivery_address %>";
+
+        const map = L.map('map').setView([18.5204, 73.8567], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const createIcon = (iconClass, innerClass) => L.divIcon({
+            html: `<div class="icon-inner"><i class="${innerClass}"></i></div>`,
+            className: `leaflet-marker-icon ${iconClass}`,
+            iconSize: [40, 40],
+            iconAnchor: [20, 40]
+        });
+        const tankerIcon = L.divIcon({
+            html: '<i class="fas fa-truck-droplet"></i>',
+            className: 'leaflet-marker-icon original-truck-icon',
+            iconSize: [40, 40],
+            iconAnchor: [20, 40]
+        });
+        const homeIcon = createIcon('custom-icon-home', 'fas fa-home');
+
+        let tankerMarker;
+
+        const updateStatusUI = (status) => {
+            const progress = document.getElementById('timelineProgress');
+            const confirmed = document.getElementById('statusConfirmed');
+            const enRoute = document.getElementById('statusEnRoute');
+            const delivered = document.getElementById('statusDelivered');
+            
+            confirmed.classList.add('active');
+            if (status === 'en-route') {
+                enRoute.classList.add('active');
+                progress.style.width = '50%';
+            } else if (status === 'delivered') {
+                enRoute.classList.add('active');
+                delivered.classList.add('active');
+                progress.style.width = '95%';
+            }
+        };
+
+        if (initialCoords) {
+            map.setView([initialCoords.lat, initialCoords.lng], 15);
+            tankerMarker = L.marker([initialCoords.lat, initialCoords.lng], { icon: tankerIcon }).addTo(map);
+            updateStatusUI('en-route');
+        } else {
+            document.getElementById('map').innerHTML = `
+                <div class="d-flex flex-column align-items-center justify-content-center h-100 p-4 text-center">
+                    <i class="fas fa-spinner fa-spin fa-3x text-muted mb-3"></i>
+                    <h4>Waiting for driver to start the trip...</h4>
+                    <p class="text-muted">The map will appear here once the tanker is on its way.</p>
+                </div>`;
+            updateStatusUI('confirmed');
+        }
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const ws = new WebSocket(`${wsProtocol}//${window.location.host}/?orderId=${orderId}`);
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            
+            if (data.type === 'delivered') {
+                updateStatusUI('delivered');
+                ws.close();
+                setTimeout(() => {
+                    const message = encodeURIComponent('Your order has been delivered successfully!');
+                    window.location.href = `/home?message=${message}`;
+                }, 2000);
+            } else {
+                const { latitude, longitude } = data;
+                const newLatLng = [latitude, longitude];
+                
+                if (tankerMarker) {
+                    tankerMarker.setLatLng(newLatLng);
+                } else {
+                    document.getElementById('map').innerHTML = '';
+                    map.invalidateSize();
+                    tankerMarker = L.marker(newLatLng, { icon: tankerIcon }).addTo(map);
+                }
+                map.panTo(newLatLng);
+                updateStatusUI('en-route');
+            }
+        };
+        
+        ws.onopen = () => console.log('Connected to tracking server.');
+        ws.onclose = () => console.log('Disconnected from tracking server.');
+        ws.onerror = (error) => console.error('WebSocket Error:', error);
+
+    </script>
+</body>
+</html>
+

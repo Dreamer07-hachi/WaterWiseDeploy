@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Login - WaterWise</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root { --primary-blue: #0d6efd; --primary-blue-dark: #0a58ca; --light-blue-bg: #f0f7ff; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--light-blue-bg); }
+        .login-card { background-color: white; border-radius: 15px; box-shadow: 0 8px 30px rgba(0,0,0,0.07); }
+        .card-header-custom { text-align: center; padding: 2rem; }
+        .card-header-custom h1 { color: var(--primary-blue-dark); font-weight: 700; }
+        .card-body-custom { padding: 2rem 2.5rem; }
+        .btn-login { background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark)); border: none; font-weight: 600; padding: 0.8rem; }
+
+        /* ========================================
+   RESPONSIVE CSS FOR LOGIN CARD
+   ======================================== */
+
+/* Extra Small Mobile (320px to 375px) */
+@media (max-width: 375px) {
+    body {
+        padding: 0.5rem;
+    }
+
+    .login-card {
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        max-width: 100%;
+        margin: 0.5rem auto;
+    }
+
+    .card-header-custom {
+        padding: 1.25rem 1rem;
+    }
+
+    .card-header-custom h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+
+    .card-header-custom p {
+        font-size: 0.8rem;
+        margin-top: 0.4rem;
+    }
+
+    .card-body-custom {
+        padding: 1.25rem 1rem;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .form-control {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+
+    .btn-login {
+        padding: 0.65rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+
+    .form-check-label {
+        font-size: 0.8rem;
+    }
+
+    .text-center a {
+        font-size: 0.8rem;
+    }
+
+    /* Input groups */
+    .input-group-text {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    /* Additional spacing adjustments */
+    .mb-3 {
+        margin-bottom: 0.85rem !important;
+    }
+
+    .mt-3 {
+        margin-top: 0.85rem !important;
+    }
+}
+
+/* Small Mobile (376px to 480px) */
+@media (min-width: 376px) and (max-width: 480px) {
+    body {
+        padding: 0.75rem;
+    }
+
+    .login-card {
+        border-radius: 13px;
+        box-shadow: 0 7px 25px rgba(0,0,0,0.06);
+        max-width: 100%;
+        margin: 0.75rem auto;
+    }
+
+    .card-header-custom {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .card-header-custom h1 {
+        font-size: 1.65rem;
+        font-weight: 700;
+    }
+
+    .card-header-custom p {
+        font-size: 0.85rem;
+    }
+
+    .card-body-custom {
+        padding: 1.5rem 1.5rem;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .form-control {
+        padding: 0.65rem 0.85rem;
+        font-size: 0.9rem;
+        border-radius: 9px;
+    }
+
+    .btn-login {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+        border-radius: 9px;
+    }
+
+    .form-check-label {
+        font-size: 0.85rem;
+    }
+
+    .text-center a {
+        font-size: 0.85rem;
+    }
+
+    .input-group-text {
+        padding: 0.65rem 0.85rem;
+        font-size: 0.95rem;
+    }
+
+    .mb-3 {
+        margin-bottom: 0.9rem !important;
+    }
+
+    .mt-3 {
+        margin-top: 0.9rem !important;
+    }
+}
+
+/* Medium Mobile (481px to 639px) */
+@media (min-width: 481px) and (max-width: 639px) {
+    body {
+        padding: 1rem;
+    }
+
+    .login-card {
+        border-radius: 14px;
+        max-width: 500px;
+        margin: 1rem auto;
+    }
+
+    .card-header-custom {
+        padding: 1.75rem 1.5rem;
+    }
+
+    .card-header-custom h1 {
+        font-size: 1.85rem;
+    }
+
+    .card-header-custom p {
+        font-size: 0.9rem;
+    }
+
+    .card-body-custom {
+        padding: 1.75rem 2rem;
+    }
+
+    .form-label {
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.95rem;
+        border-radius: 10px;
+    }
+
+    .btn-login {
+        padding: 0.75rem;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+
+    .input-group-text {
+        padding: 0.7rem 0.9rem;
+    }
+}
+
+/* Tablet Small (640px to 768px) */
+@media (min-width: 640px) and (max-width: 768px) {
+    body {
+        padding: 1.5rem;
+    }
+
+    .login-card {
+        border-radius: 15px;
+        max-width: 550px;
+        margin: 1.5rem auto;
+    }
+
+    .card-header-custom {
+        padding: 2rem 1.75rem;
+    }
+
+    .card-header-custom h1 {
+        font-size: 2rem;
+    }
+
+    .card-body-custom {
+        padding: 2rem 2.25rem;
+    }
+
+    .form-control {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 11px;
+    }
+
+    .btn-login {
+        padding: 0.8rem;
+        font-size: 1.05rem;
+        border-radius: 11px;
+    }
+
+    .input-group-text {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Tablet Medium (769px to 1023px) */
+@media (min-width: 769px) and (max-width: 1023px) {
+    .login-card {
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+
+    .card-header-custom {
+        padding: 2rem;
+    }
+
+    .card-header-custom h1 {
+        font-size: 2.2rem;
+    }
+
+    .card-body-custom {
+        padding: 2rem 2.5rem;
+    }
+
+    .form-control {
+        padding: 0.8rem 1rem;
+        border-radius: 12px;
+    }
+
+    .btn-login {
+        padding: 0.85rem;
+        border-radius: 12px;
+    }
+}
+
+/* Desktop Small (1024px to 1280px) */
+@media (min-width: 1024px) and (max-width: 1280px) {
+    .login-card {
+        max-width: 500px;
+        margin: 2.5rem auto;
+    }
+
+    .card-header-custom h1 {
+        font-size: 2.3rem;
+    }
+
+    .card-body-custom {
+        padding: 2rem 2.5rem;
+    }
+}
+
+/* Desktop Medium (1281px to 1440px) */
+@media (min-width: 1281px) and (max-width: 1440px) {
+    .login-card {
+        max-width: 520px;
+        margin: 3rem auto;
+    }
+
+    .card-header-custom h1 {
+        font-size: 2.4rem;
+    }
+
+    .card-body-custom {
+        padding: 2.25rem 2.75rem;
+    }
+}
+
+/* Desktop Large (1441px and above) */
+@media (min-width: 1441px) {
+    .login-card {
+        max-width: 550px;
+        margin: 3.5rem auto;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    }
+
+    .card-header-custom {
+        padding: 2.5rem;
+    }
+
+    .card-header-custom h1 {
+        font-size: 2.5rem;
+    }
+
+    .card-body-custom {
+        padding: 2.5rem 3rem;
+    }
+
+    .form-control {
+        padding: 0.85rem 1.1rem;
+        font-size: 1.05rem;
+    }
+
+    .btn-login {
+        padding: 0.9rem;
+        font-size: 1.1rem;
+    }
+}
+
+/* Landscape Mode for Mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+    body {
+        padding: 0.5rem;
+    }
+
+    .login-card {
+        max-width: 90%;
+        margin: 0.5rem auto;
+    }
+
+    .card-header-custom {
+        padding: 1rem;
+    }
+
+    .card-header-custom h1 {
+        font-size: 1.4rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .card-header-custom p {
+        font-size: 0.8rem;
+    }
+
+    .card-body-custom {
+        padding: 1rem 1.5rem;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .form-control {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-login {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .mb-3 {
+        margin-bottom: 0.75rem !important;
+    }
+
+    .mt-3 {
+        margin-top: 0.75rem !important;
+    }
+}
+
+/* Very Short Landscape */
+@media (max-height: 500px) and (orientation: landscape) {
+    .card-header-custom {
+        padding: 0.75rem;
+    }
+
+    .card-header-custom h1 {
+        font-size: 1.25rem;
+    }
+
+    .card-body-custom {
+        padding: 0.75rem 1.25rem;
+    }
+
+    .form-control {
+        padding: 0.45rem 0.7rem;
+    }
+
+    .btn-login {
+        padding: 0.55rem;
+    }
+
+    .mb-3 {
+        margin-bottom: 0.6rem !important;
+    }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .form-control {
+        min-height: 44px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    .btn-login {
+        min-height: 44px;
+    }
+
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Remove hover effects on touch devices */
+    .btn-login:hover {
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+        transform: none;
+    }
+
+    .btn-login:active {
+        transform: scale(0.98);
+        opacity: 0.9;
+    }
+
+    a:hover {
+        text-decoration: none;
+    }
+
+    a:active {
+        opacity: 0.8;
+    }
+}
+
+/* High DPI / Retina Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .login-card {
+        box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    }
+
+    .form-control {
+        border-width: 0.5px;
+    }
+}
+
+/* Reduced Motion for Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .btn-login:active {
+        transform: none;
+    }
+}
+
+/* Safe Area Insets for Notched Devices */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: max(0.5rem, env(safe-area-inset-left));
+        padding-right: max(0.5rem, env(safe-area-inset-right));
+    }
+}
+
+/* Focus States for Accessibility */
+.form-control:focus,
+.btn-login:focus,
+.form-check-input:focus {
+    outline: 2px solid var(--primary-blue);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Loading State (Optional) */
+.btn-login:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background-color: white;
+    }
+
+    .login-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+    .btn-login {
+        display: none;
+    }
+}
+
+/* Container for centering login card vertically */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 0.5rem;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+}
+
+/* Additional utility classes for better responsiveness */
+.form-control::placeholder {
+    opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+    .form-control::placeholder {
+        font-size: 0.85rem;
+    }
+}
+
+/* Smooth transitions */
+.btn-login,
+.form-control,
+a {
+    transition: all 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn-login,
+    .form-control,
+    a {
+        transition: none;
+    }
+}
+
+/* Error message styling (responsive) */
+.invalid-feedback {
+    font-size: 0.875rem;
+}
+
+@media (max-width: 480px) {
+    .invalid-feedback {
+        font-size: 0.75rem;
+    }
+}
+
+/* Social login buttons (if applicable) */
+.btn-social {
+    padding: 0.8rem;
+}
+
+@media (max-width: 480px) {
+    .btn-social {
+        padding: 0.65rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Divider text */
+.divider-text {
+    font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+    .divider-text {
+        font-size: 0.8rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <%- include('partials/header-prehome') %>
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+            <div class="col-lg-5 col-md-7">
+                <div class="login-card">
+                    <div class="card-header-custom">
+                        <h1>Supplier Portal</h1>
+                        <p class="text-muted mb-0">Login to manage your orders.</p>
+                    </div>
+                    <div class="card-body-custom">
+                        <% if (typeof error !== 'undefined' && error) { %>
+                            <div class="alert alert-danger"><%= error %></div>
+                        <% } %>
+                        <form action="/login-supplier" method="POST">
+                            <div class="mb-3">
+                                <label for="phoneNumber" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary fw-bold btn-login">Login</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%- include('partials/footer-prehome') %>
+</body>
+</html>

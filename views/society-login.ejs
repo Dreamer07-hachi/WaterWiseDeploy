@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society Login - SmartWater</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/login.css" />
+</head>
+<body>
+    <%- include('partials/header-prehome') %>
+
+    <div class="main-container left-panel" style="justify-content: center; width: 100%;">
+        <div class="floating-card">
+            <div class="card-header text-center">
+                <h2 class="card-title">Society Chairman Login</h2>
+                <p class="card-subtitle">Access your society's water management dashboard.</p>
+            </div>
+
+            <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+            <% if (message) { %><div class="alert alert-success"><%= message %></div><% } %>
+
+            <form action="/society/login" method="POST">
+                <div class="form-group"><div class="input-group"><span class="input-group-text"><i class="fas fa-phone"></i></span><input type="tel" class="form-control" name="chairmanPhone" placeholder="Your Phone Number" required></div></div>
+                <div class="form-group"><div class="input-group"><span class="input-group-text"><i class="fas fa-lock"></i></span><input type="password" class="form-control" name="password" placeholder="Enter your password" required></div></div>
+                <button type="submit" class="btn btn-primary-custom"><i class="fas fa-sign-in-alt me-2"></i>Login</button>
+            </form>
+            <div class="text-center mt-3">
+                <a href="/society/register">Register a new Society</a>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer-prehome') %>
+</body>
+</html>

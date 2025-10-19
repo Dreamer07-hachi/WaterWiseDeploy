@@ -1,0 +1,354 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* These rules are more specific, so they will 
+      override your external styles.css
+    */
+    header .dropdown-menu {
+        display: none; /* Hide menu by default */
+    }
+
+    header .dropdown-menu.show {
+        display: block; /* Show menu when ".show" class is added */
+    }
+
+    /* This rule STOPS the hover-to-open behavior from your styles.css */
+    header .dropdown:hover .dropdown-menu {
+        display: none; /* Keep it hidden on hover... */
+    }
+    
+    /* ...UNLESS it has the .show class (from a click) */
+    header .dropdown:hover .dropdown-menu.show {
+        display: block; 
+    }
+
+    /* The rest of this is your original CSS to make 
+      the header look correct. 
+    */
+    :root {
+        --primary-blue: #2563eb;
+        --blue-light: #3b82f6;
+        --blue-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+        --white: #ffffff;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    }
+
+    header {
+        background: var(--blue-gradient);
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: var(--shadow-lg);
+        min-height: 80px;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 3rem;
+    }
+
+    .logo {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .logo:hover {
+        transform: scale(1.05);
+    }
+
+    .logo i {
+        font-size: 2.5rem;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .tagline {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+        font-weight: 400;
+        margin-left: 1rem;
+        border-left: 2px solid rgba(255, 255, 255, 0.3);
+        padding-left: 1rem;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .header-nav {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    nav ul {
+        list-style: none;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    nav a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    nav a:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-cta {
+        display: flex;
+        gap: 1rem;
+        position: relative;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-btn {
+        color: var(--white);
+        text-decoration: none;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        background: none;
+    }
+
+    .dropdown-btn.signup-btn {
+        background: var(--white);
+        color: var(--primary-blue);
+        border: 2px solid var(--white);
+        white-space: nowrap;
+    }
+
+    .dropdown-btn:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: var(--white);
+        min-width: 180px;
+        box-shadow: var(--shadow-xl);
+        z-index: 1001;
+        border-radius: 10px;
+        padding: 0.5rem;
+        margin-top: 0.75rem;
+        border: 1px solid var(--gray-200);
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+
+
+    .dropdown-menu a {
+        color: var(--gray-800);
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+        display: block;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+        border: none;
+        backdrop-filter: none;
+        /* For icon alignment */
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .dropdown-menu a:hover {
+        background-color: var(--gray-100);
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .dropdown-menu a i {
+        width: 20px;
+        text-align: center;
+        color: var(--gray-500);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        header {
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .header-left {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .tagline {
+            border-left: none;
+            padding-left: 0;
+            margin-left: 0;
+        }
+
+        .header-right {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .header-cta {
+            justify-content: center;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 100%;
+            right: auto;
+            margin-top: 0.75rem;
+        }
+    }
+</style>
+
+
+<header>
+    <div class="header-left">
+        <a href="/prehome" class="logo">
+            WaterWise
+        </a>
+        <div class="tagline">Smart Water Management for Modern India</div>
+    </div>
+
+    <div class="header-right">
+
+        <div class="header-cta">
+            <div class="dropdown login-dropdown">
+                <div class="dropdown-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
+                </div>
+                <div class="dropdown-menu">
+                    <a href="/login"><i class="fas fa-user"></i> Customer</a>
+                    <a href="/login-supplier"><i class="fas fa-truck"></i> Tankers</a>
+                    <a href="/society/login"><i class="fas fa-building"></i> Society</a>
+                </div>
+            </div>
+
+            <div class="dropdown signup-dropdown">
+                <div class="dropdown-btn signup-btn">
+                    <i class="fas fa-rocket"></i>
+                    Get Started
+                </div>
+                <div class="dropdown-menu">
+                    <a href="/register"><i class="fas fa-user-plus"></i> Customers</a>
+                    <a href="/register-supplier"><i class="fas fa-truck"></i> Tankers</a>
+                    <a href="/society/register"><i class="fas fa-city"></i> Societies</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<script>
+    // We wrap our code in a check to make sure it doesn't run
+    // multiple times if this header is loaded weirdly.
+    if (typeof headerScriptLoaded === 'undefined') {
+        const headerScriptLoaded = true;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            
+            // We select the dropdowns *inside* this specific header
+            // This is safer in case you have other dropdowns
+            const headerElement = document.querySelector("header");
+            if (!headerElement) return; // Exit if header not found
+            
+            const dropdowns = headerElement.querySelectorAll(".dropdown");
+
+            dropdowns.forEach(dropdown => {
+                const btn = dropdown.querySelector(".dropdown-btn");
+                const menu = dropdown.querySelector(".dropdown-menu");
+
+                if (!btn || !menu) return; // Skip if button or menu missing
+
+                btn.addEventListener("click", function (event) {
+                    event.stopPropagation();
+                    
+                    // Close all *other* dropdowns
+                    closeAllDropdowns(menu);
+
+                    // Toggle (open/close) this menu
+                    menu.classList.toggle("show");
+                });
+            });
+            
+            function closeAllDropdowns(exceptThisMenu = null) {
+                headerElement.querySelectorAll(".dropdown-menu.show").forEach(openMenu => {
+                    if (openMenu !== exceptThisMenu) {
+                        openMenu.classList.remove("show");
+                    }
+                });
+            }
+
+            // Clicking anywhere else on the window closes the menus
+            window.addEventListener("click", function () {
+                closeAllDropdowns();
+            });
+        });
+    }
+</script>

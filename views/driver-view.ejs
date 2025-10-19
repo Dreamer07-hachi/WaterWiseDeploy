@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= supplier.business_name %> - Driver Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/driver-view.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <h1 class="logo-text"><a href="/supplier/dashboard" class="logo-link"><%= supplier.business_name %> Dashboard</a></h1>
+            <a href="/logout-supplier" class="btn btn-danger logout-btn">Logout</a>
+        </div>
+    </header>
+
+    <main class="content-area">
+        <div class="trip-card">
+            
+            <div class="card-header">
+                <h2>Live Trip</h2>
+            </div>
+            
+            <div class="card-body">
+                <div class="info-group">
+                    <span class="info-label">Order ID</span>
+                    <span class="info-value"><%= order.id %></span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">Tanker ID</span>
+                    <span class="info-value"><%= order.tanker_id %></span>
+                </div>
+
+                <div id="status" class="status-badge-neutral">
+                    Initializing GPS...
+                </div>
+
+                <div class="location-group">
+                    <span class="info-label">Current Location:</span>
+                    <p id="coords" class="location-value">Waiting for signal...</p>
+                </div>
+            </div>
+            
+            <div class="card-footer">
+                <form id="deliveryForm" action="/order-delivered" method="POST">
+                    <input type="hidden" name="orderId" value="<%= order.id %>">
+                    <button type="submit" class="btn btn-success delivered-btn">Mark as Delivered</button>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const tankerId = '<%= order.tanker_id %>';
+        const statusEl = document.getElementById('status');
+        const coordsEl = document.getElementById('coords');
+        let watchId;
+
+        function locationUpdateSuccess(pos) {
+            const { latitude, longitude } = pos.coords;
+            
+            // Update UI elements
+            statusEl.className = 'status-badge-success'; // Use custom class
+            statusEl.textContent = 'GPS Signal Acquired. Sending location...';
+            coordsEl.textContent = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+
+            // Send location to the server
+            fetch('/api/tanker/location', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tankerId, latitude, longitude }),
+            })
+            .catch(err => {
+                console.error('Failed to send location:', err);
+                statusEl.className = 'status-badge-danger'; // Use custom class
+                statusEl.textContent = 'Error sending location to server.';
+            });
+        }
+
+        function locationUpdateError(err) {
+            console.warn(`ERROR(${err.code}): ${err.message}`);
+            statusEl.className = 'status-badge-danger'; // Use custom class
+            statusEl.textContent = 'Could not get location. Please enable GPS.';
+        }
+
+        // Start watching the location
+        if ('geolocation' in navigator) {
+            watchId = navigator.geolocation.watchPosition(locationUpdateSuccess, locationUpdateError, {
+                enableHighAccuracy: true
+            });
+        } else {
+            statusEl.textContent = "Geolocation is not supported by this browser.";
+        }
+
+        // Stop watching when the form is submitted
+        document.getElementById('deliveryForm').addEventListener('submit', function() {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+            }
+        });
+    </script>
+</body>
+</html>

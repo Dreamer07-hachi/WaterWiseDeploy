@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Goal - WaterWise</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <style>
+        /* Base styles for the settings container */
+        .settings-container {
+            max-width: 500px; /* Maximum width on larger screens */
+            margin: 2rem auto; /* Center with top/bottom margin */
+            padding: 2rem; /* Spacing inside the container */
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Basic form element adjustments (might be overridden by styles.css) */
+        .settings-container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #333; /* Example color */
+        }
+
+        .settings-container .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .settings-container label {
+            display: block; /* Make label take its own line */
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555; /* Example color */
+        }
+
+        .settings-container input[type="number"] {
+            width: 100%; /* Make input take full width */
+            padding: 0.75rem;
+            border: 1px solid #ccc; /* Example border */
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .settings-container .helper-text {
+            font-size: 0.85rem;
+            color: #777; /* Example color */
+            margin-top: 0.25rem;
+        }
+
+        .settings-container button[type="submit"] {
+            width: 100%; /* Make button full width */
+            padding: 0.85rem;
+            background-color: #0d6efd; /* Example blue */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .settings-container button[type="submit"]:hover {
+            background-color: #0a58ca; /* Darker blue on hover */
+        }
+
+        .settings-container button[type="submit"]:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+
+        /* --- Responsive Adjustments --- */
+
+        /* Tablets and smaller */
+        @media (max-width: 768px) {
+            .settings-container {
+                margin: 1.5rem auto;
+                padding: 1.5rem;
+                /* No max-width needed, let it use available space */
+                max-width: 90%; /* Ensure some side margins */
+            }
+
+            .settings-container h2 {
+                font-size: 1.5rem; /* Slightly smaller title */
+            }
+        }
+
+        /* Mobile phones */
+        @media (max-width: 480px) {
+            .settings-container {
+                margin: 1rem auto;
+                padding: 1rem;
+                max-width: 95%; /* Even less side margin */
+                border-radius: 8px; /* Slightly smaller radius */
+            }
+
+            .settings-container h2 {
+                font-size: 1.3rem;
+            }
+
+            .settings-container label {
+                font-size: 0.95rem;
+            }
+
+            .settings-container input[type="number"] {
+                padding: 0.65rem;
+                font-size: 0.95rem;
+            }
+
+            .settings-container button[type="submit"] {
+                padding: 0.75rem;
+                font-size: 0.95rem;
+            }
+
+            .settings-container .helper-text {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body class="center-layout"> <%- include('partials/header') %> <main class="main-content"> <div class="settings-container">
+            <h2>Your Settings</h2>
+            
+            <form id="goal-form">
+                <div class="form-group">
+                    <label for="monthly-goal">Your Monthly Water Goal (in m³):</label>
+                    <input type="number" id="monthly-goal" name="goal" step="0.1" placeholder="e.g., 10.5" required>
+                    <p class="helper-text">Set a target for your monthly water consumption.</p>
+                </div>
+                <button type="submit" id="save-goal-btn">Save Goal</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById('goal-form');
+        const button = document.getElementById('save-goal-btn');
+        const input = document.getElementById('monthly-goal');
+
+        // 1. Fetch the user's current goal to show it
+        (async () => {
+            try {
+                const response = await fetch('/api/gauge');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                if (data && typeof data.goal !== 'undefined') {
+                    input.value = data.goal;
+                } else {
+                    console.warn('Goal data not found in API response');
+                }
+            } catch (error) {
+                console.error('Could not fetch current goal:', error);
+                // Optionally display an error to the user
+            }
+        })();
+
+        // 2. Handle the form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newGoal = input.value;
+            // Basic validation
+            if (newGoal === '' || parseFloat(newGoal) < 0) {
+                alert('Please enter a valid, non-negative goal.');
+                return;
+            }
+            
+            button.textContent = 'Saving...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch('/api/goal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ goal: parseFloat(newGoal) }) // Send as number
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({})); // Try to get error details
+                    throw new Error(errorData.error || 'Server error saving goal.');
+                }
+                
+                alert('Goal saved successfully!');
+                
+            } catch (error) {
+                console.error('Failed to save goal:', error);
+                alert(`Error saving goal: ${error.message}. Please try again.`);
+            } finally {
+                button.textContent = 'Save Goal';
+                button.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

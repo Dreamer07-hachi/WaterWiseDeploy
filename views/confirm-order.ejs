@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Your Order - WaterWise</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        :root {
+            --primary-blue: #0d6efd;
+            --primary-blue-dark: #0a58ca;
+            --light-blue-bg: #f0f7ff;
+            --white-bg: #ffffff;
+            --text-dark: #212529;
+            --text-muted: #6c757d;
+            --border-color: #e9ecef;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-blue-bg);
+            color: var(--text-dark);
+        }
+
+        .confirmation-card {
+            background-color: var(--white-bg);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+        }
+
+        .card-header-custom {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--light-blue-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .card-header-custom h2 {
+            color: var(--primary-blue-dark);
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .card-body-custom {
+            padding: 2rem 2.5rem;
+        }
+        
+        .summary-section h5 {
+            font-weight: 600;
+            color: var(--primary-blue-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-item span:first-child {
+            color: var(--text-muted);
+        }
+        
+        .summary-item strong {
+            color: var(--text-dark);
+        }
+        
+        .total-summary {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--text-dark);
+        }
+        
+        .total-summary .summary-item {
+            font-size: 1.25rem;
+            font-weight: 700;
+            border: none;
+        }
+        .total-summary strong {
+            color: var(--primary-blue-dark);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-blue-dark);
+        }
+        
+        .form-control {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            border: none;
+            font-weight: 600;
+            padding: 0.8rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+        }
+
+        /* Responsive styles */
+.card-header-custom h2 {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.card-body-custom {
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.summary-section h5 {
+    font-size: clamp(1rem, 3vw, 1.25rem);
+}
+
+.summary-item {
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.total-summary .summary-item {
+    font-size: clamp(1rem, 3vw, 1.25rem);
+}
+
+.btn-confirm {
+    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+    width: 100%;
+}
+
+/* Tablet breakpoint */
+@media (max-width: 768px) {
+    .card-header-custom {
+        padding: 1.5rem 1rem;
+    }
+    
+    .card-body-custom {
+        padding: 1.5rem 1.25rem;
+    }
+    
+    .summary-item {
+        padding: 0.65rem 0;
+    }
+    
+    .btn-confirm {
+        padding: 0.7rem;
+    }
+}
+
+/* Mobile breakpoint */
+@media (max-width: 480px) {
+    .confirmation-card {
+        border-radius: 12px;
+    }
+    
+    .card-header-custom {
+        padding: 1.25rem 0.75rem;
+    }
+    
+    .card-body-custom {
+        padding: 1.25rem 1rem;
+    }
+    
+    .summary-section h5 {
+        margin-bottom: 0.75rem;
+        gap: 0.35rem;
+    }
+    
+    .summary-item {
+        padding: 0.6rem 0;
+        font-size: 0.875rem;
+    }
+    
+    .total-summary {
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+    }
+    
+    .form-control {
+        padding: 0.65rem 0.875rem;
+    }
+    
+    .btn-confirm {
+        padding: 0.65rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+    .card-body-custom {
+        padding: 1rem 0.75rem;
+    }
+    
+    .summary-item {
+        font-size: 0.8125rem;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <%- include('partials/header') %>
+    
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-9">
+                <div class="confirmation-card">
+                    <div class="card-header-custom">
+                        <h2>Almost There!</h2>
+                        <p class="text-muted mb-0">Confirm your details to place the order.</p>
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="summary-section mb-4">
+                            <h5><i class="fas fa-receipt"></i>Order Summary</h5>
+                            <div class="summary-item">
+                                <span>Supplier:</span>
+                                <strong><%= tanker.business_name %></strong>
+                            </div>
+                            <div class="summary-item">
+                                <span>Capacity:</span>
+                                <strong><%= tanker.capacity_litres.toLocaleString('en-IN') %> Litres</strong>
+                            </div>
+                            <div class="summary-item">
+                                <span>Price:</span>
+                                <strong>₹<%= tanker.price_per_1000_litres.toLocaleString('en-IN') %> / 1000L</strong>
+                            </div>
+                             <div class="total-summary">
+                                <div class="summary-item">
+                                    <span>Total Price:</span>
+                                    <strong>₹<%= ((tanker.capacity_litres / 1000) * tanker.price_per_1000_litres).toLocaleString('en-IN') %></strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form id="orderForm">
+                            <input type="hidden" name="tankerId" id="tankerId" value="<%= tanker.id %>">
+                            <input type="hidden" name="totalPrice" id="totalPrice" value="<%= (tanker.capacity_litres / 1000) * tanker.price_per_1000_litres %>">
+                            
+                            <div class="mb-4">
+                                <label for="deliveryAddress" class="form-label"><i class="fas fa-map-marker-alt"></i> Enter Your Full Delivery Address</label>
+                                <textarea class="form-control" id="deliveryAddress" name="deliveryAddress" rows="3" placeholder="e.g., House No. 123, Sunshine Apartments, ABC Road, Pune, Maharashtra - 411001" required></textarea>
+                            </div>
+
+                            <p class="text-muted small text-center">By clicking "Confirm & Pay", you agree to our terms and will be redirected to our secure payment gateway.</p>
+
+                            <div class="d-grid mt-3">
+                                <button type="submit" class="btn btn-primary btn-lg fw-bold btn-confirm">Confirm & Pay</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        lucide.createIcons();
+
+        document.getElementById('orderForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const deliveryAddress = document.getElementById('deliveryAddress').value;
+            if (!deliveryAddress) {
+                alert('Please enter a delivery address.');
+                return;
+            }
+
+            const totalPrice = document.getElementById('totalPrice').value;
+            const tankerId = document.getElementById('tankerId').value;
+
+            // 1. Create Razorpay order on the server
+            const response = await fetch('/create-order-razorpay', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ totalPrice })
+            });
+
+            const order = await response.json();
+            
+            // 2. Open Razorpay Checkout
+            const options = {
+                key: '<%= process.env.RAZORPAY_KEY_ID %>',
+                amount: order.amount,
+                currency: "INR",
+                name: "WaterWise",
+                description: "Water Tanker Booking",
+                image: "/css/images/Waterwise.png",
+                order_id: order.id,
+                handler: async function (response) {
+                    // 3. Verify payment on the server
+                    const verificationResponse = await fetch('/payment-verification', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature,
+                            tankerId,
+                            deliveryAddress,
+                            totalPrice
+                        })
+                    });
+                    
+                    const result = await verificationResponse.json();
+                    if(result.success) {
+                        window.location.href = `/order-success/${result.orderId}`;
+                    } else {
+                        alert('Payment failed. Please try again.');
+                    }
+                },
+                prefill: {
+                    name: "<%= user.name %>",
+                    contact: "<%= user.phone %>"
+                },
+                notes: {
+                    address: "WaterWise Corporate Office"
+                },
+                theme: {
+                    color: "#0d6efd"
+                }
+            };
+
+            const rzp1 = new Razorpay(options);
+            rzp1.on('payment.failed', function (response){
+                alert('Payment Failed: ' + response.error.description);
+            });
+            rzp1.open();
+        });
+    </script>
+</body>
+</html>
+

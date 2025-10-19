@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Consumption Dashboard</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <%- include('partials/header') %>
+    <nav>
+        <a href="/meter">Enter Reading</a>
+    </nav>
+    <div class="dashboard-grid">
+        <div class="chart-container main-chart card">
+            <h2>Water Consumption Analysis</h2>
+            <div class="controls">
+                <div class="chart-type-controls">
+                    <span>Chart Type:</span>
+                    <button id="barBtn" class="active">Bar</button>
+                    <button id="lineBtn">Line</button>
+                </div>
+                <div class="date-controls">
+                    <label for="dateRangeSelect">Period:</label>
+                    <select id="dateRangeSelect">
+                        <option value="week">Last 7 Days</option>
+                        <option value="month">Last 30 Days</option>
+                        <option value="year">Last Year</option>
+                        <option value="custom">Custom</option> </select>
+                    
+                    <div id="customDateContainer" style="display: none; align-items: center; gap: 5px; margin-left: 10px;">
+                        <input type="date" id="startDate">
+                        <span>to</span>
+                        <input type="date" id="endDate">
+                        <button id="goBtn">Go</button>
+                    </div>
+                </div>
+            </div>
+            <canvas id="consumptionChart"></canvas>
+        </div>
+
+        <div class="side-panel">
+
+            <div class="cta-container">
+                <a href="/meter" class="cta-button">Enter New Reading</a>
+            </div>
+
+            <div class="card chart-container small-chart">
+                <h2 id="gauge-title">Monthly Goal Progress</h2>
+                <canvas id="gaugeChart"></canvas>
+                <div class="gauge-details">
+                    <p>Used: <span id="gauge-usage">0 m³</span></p>
+                    <p>Goal: <span id="gauge-goal">0 m³</span></p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="report-container card">
+        <h2>Consumption Report</h2>
+            <p id="report-summary-sentence" class="summary-text"></p> <div class="stats-grid"></div>
+        <div class="stats-grid">
+             <div class="stat-card">
+                <h3>Weekly Average</h3>
+                <p><span id="avg7">0</span> m³</p>
+                <small>Last 7 Days</small>
+            </div>
+            <div class="stat-card">
+                <h3>Monthly Average</h3>
+                <p><span id="avg30">0</span> m³</p>
+                <small>Last 30 Days</small>
+            </div>
+            <div class="stat-card" id="trend-card">
+                <h3>7-Day Trend</h3>
+                <p><span id="trend">0</span>%</p>
+                <small>vs. Monthly Average</small>
+            </div>
+            <div class="stat-card">
+                <h3>Highest Day</h3>
+                <p><span id="highest-consumption">0</span> m³</p>
+                <small>on <span id="highest-date">N/A</span></small>
+            </div>
+        </div>
+        <div class="tips-section">
+            <h3>Water Saving Tips</h3>
+            <ul id="report-tips"></ul>
+        </div>
+    </div>
+    <script>
+        let consumptionChart;
+
+        // --- Main Chart Functions ---
+        function createEmptyChart() {
+            const ctx = document.getElementById('consumptionChart').getContext('2d');
+            consumptionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Consumption (m³)',
+                        data: [],
+                        backgroundColor: 'rgba(24, 119, 242, 0.5)',
+                        borderColor: 'rgba(24, 119, 242, 1)',
+                        borderWidth: 1,
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: { unit: 'day', displayFormats: { day: 'yyyy-MM-dd' } },
+                            title: { display: false }
+                        },
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        async function updateChartData() {
+            const range = document.getElementById('dateRangeSelect').value;
+            let fetchURL = `/api/readings?range=${range}`;
+
+            if (range === 'custom') {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                if (!startDate || !endDate) {
+                    return; // Don't fetch if custom dates are not selected
+                }
+                fetchURL = `/api/readings?startDate=${startDate}&endDate=${endDate}`;
+            }
+            
+            try {
+                const response = await fetch(fetchURL, { cache: 'no-store' });
+                if (!response.ok) throw new Error('Network response was not ok.');
+                const consumptionData = await response.json();
+                
+                const canvas = document.getElementById('consumptionChart');
+                const noDataMsg = document.getElementById('noDataMsg');
+                if (noDataMsg) noDataMsg.remove();
+
+                if (consumptionData.length === 0) {
+                    canvas.style.display = 'none';
+                    document.querySelector('.main-chart').insertAdjacentHTML('beforeend', '<p id="noDataMsg">No consumption data for this period.</p>');
+                    if (consumptionChart) { consumptionChart.data.labels = []; consumptionChart.data.datasets[0].data = []; consumptionChart.update(); }
+                    return;
+                }
+                canvas.style.display = 'block';
+                consumptionChart.data.labels = consumptionData.map(item => item.date);
+                consumptionChart.data.datasets[0].data = consumptionData.map(item => item.consumption);
+                consumptionChart.update();
+            } catch (error) { console.error('Error in updateChartData:', error); }
+        }
+
+        // --- Gauge Chart Function ---
+        async function createGaugeChart() {
+            try {
+                const response = await fetch('/api/gauge', { cache: 'no-store' });
+                const data = await response.json();
+                const remaining = Math.max(0, data.goal - data.currentUsage);
+                
+                document.getElementById('gauge-title').textContent = `${data.month} Goal Progress`;
+                document.getElementById('gauge-usage').textContent = `${data.currentUsage.toFixed(2)} m³`;
+                document.getElementById('gauge-goal').textContent = `${data.goal.toFixed(2)} m³`;
+                
+                const ctx = document.getElementById('gaugeChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Used', 'Remaining'],
+                        datasets: [{ data: [data.currentUsage, remaining], backgroundColor: ['rgba(24, 119, 242, 0.7)', 'rgba(220, 220, 220, 0.7)'], borderWidth: 0 }]
+                    },
+                    options: { rotation: -90, circumference: 180, cutout: '60%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+                });
+            } catch (error) { console.error("Error creating gauge chart:", error); }
+        }
+
+        // --- Report Function ---
+        async function fetchReportData() {
+    try {
+        const response = await fetch('/api/report', { cache: 'no-store' });
+        const data = await response.json();
+
+        // Handle "Not enough data" case
+        if (data.summary) {
+            document.querySelector('.report-container').innerHTML = `<h2>Consumption Report</h2><p>${data.summary}</p>`;
+            return;
+        }
+
+        // --- START OF NEW/UPDATED CODE ---
+        // Generate the written summary sentence
+        let summary = '';
+        const trendValue = parseFloat(data.trend);
+
+        if (trendValue > 5) {
+            summary = `Your average daily consumption over the last week was ${data.average7} m³, which is significantly higher than your monthly average of ${data.average30} m³. Your usage is trending up.`;
+        } else if (trendValue < -5) {
+            summary = `Great job! Your average daily consumption over the last week was ${data.average7} m³, which is lower than your monthly average of ${data.average30} m³. Keep up the great work!`;
+        } else {
+            summary = `Your average daily consumption over the last week was ${data.average7} m³, which is consistent with your monthly average of ${data.average30} m³. Your usage is stable.`;
+        }
+        
+        // Put the summary into the new <p> tag
+        document.getElementById('report-summary-sentence').textContent = summary;
+        // --- END OF NEW/UPDATED CODE ---
+
+        // Populate the stat cards (this part remains the same)
+        document.getElementById('avg7').textContent = data.average7;
+        document.getElementById('avg30').textContent = data.average30;
+        document.getElementById('trend').textContent = data.trend;
+        document.getElementById('highest-consumption').textContent = data.highestDayConsumption;
+        document.getElementById('highest-date').textContent = data.highestDayDate;
+
+        // Color-code the trend card (this part remains the same)
+        const trendCard = document.getElementById('trend-card');
+        trendCard.classList.remove('trend-up', 'trend-down');
+        if (trendValue > 5) trendCard.classList.add('trend-up');
+        else if (trendValue < -5) trendCard.classList.add('trend-down');
+        
+        // Populate the tips (this part remains the same)
+        const tipsList = document.getElementById('report-tips');
+        tipsList.innerHTML = '';
+        data.tips.forEach(tip => {
+            const li = document.createElement('li');
+            li.textContent = tip;
+            tipsList.appendChild(li);
+        });
+    } catch (error) {
+        console.error("Error fetching report:", error);
+    }
+}
+
+            // --- Event Listeners and Initial Load ---
+            const barBtn = document.getElementById('barBtn');
+            const lineBtn = document.getElementById('lineBtn');
+            const dateRangeSelect = document.getElementById('dateRangeSelect');
+            const customDateContainer = document.getElementById('customDateContainer');
+            const goBtn = document.getElementById('goBtn');
+
+            barBtn.addEventListener('click', () => {
+                consumptionChart.config.type = 'bar';
+                consumptionChart.data.datasets[0].fill = false; // Styling for bar chart
+                barBtn.classList.add('active');
+                lineBtn.classList.remove('active');
+                consumptionChart.update();
+            });
+
+            lineBtn.addEventListener('click', () => {
+                consumptionChart.config.type = 'line';
+                consumptionChart.data.datasets[0].fill = true; // Styling for line chart
+                lineBtn.classList.add('active');
+                barBtn.classList.remove('active');
+                consumptionChart.update();
+            });
+
+            dateRangeSelect.addEventListener('change', () => {
+                if (dateRangeSelect.value === 'custom') {
+                    customDateContainer.style.display = 'flex';
+                } else {
+                    customDateContainer.style.display = 'none';
+                    updateChartData();
+                }
+            });
+
+            goBtn.addEventListener('click', updateChartData);
+
+            window.onload = () => {
+                createEmptyChart();
+                updateChartData();
+                createGaugeChart();
+                fetchReportData();
+            };    
+    </script>
+</body>
+</html>
